@@ -1,3 +1,4 @@
+<#assign bodyId = 'home' />
 <#include "common/header.ftl" />
 <ul>
 <li>Badge ID: ${badge.id}</li>
