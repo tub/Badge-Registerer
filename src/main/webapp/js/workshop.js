@@ -2,7 +2,7 @@ var currentBadge = 0;
 
 $(document).ready(function(){
 	if($("body#home").size() > 0){
-		$("body").append("<div id='ajax'>Looking for badges.</div>");
+		$("#content").append("<div id='ajax'>Looking for badges</div>");
 		setInterval( "doBadgeAjax()", 1000 );
 	}
 });
