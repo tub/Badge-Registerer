@@ -6,13 +6,13 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.buildbrighton.badge.BadgeListener.Mode;
+import com.buildbrighton.badge.BadgeDataListener.Mode;
 
 public class BadgeListenerImplTest {
 
 	@Test
 	public void testDataAvailable() {
-		BadgeListenerImpl b = new BadgeListenerImpl();
+		BadgeImpl b = new BadgeImpl();
 		//Send header packet
 		b.dataAvailable(new byte[]{(byte)0xbb, (byte)0x13, Mode.SENDING_EEPROM.mode(), (byte)0x00});
 		b.dataAvailable(new byte[]{(byte)0xbb, (byte)0x00, (byte)0x01, (byte)0x45});

@@ -27,8 +27,10 @@
       <property name="suffix" value=".ftl" />
    </bean>
 
-   <bean id="badgeListener" class="com.buildbrighton.badge.BadgeListenerImpl"
-      autowire="byType" />
+   <bean id="badgeListener" class="com.buildbrighton.badge.BadgeImpl"
+      autowire="byType">
+      <property name="badgeEventListener" ref="badgeService" />
+      </bean>
 
    <bean id="badgeSerial" class="com.buildbrighton.badge.serial.BadgeSerialListener"
       autowire="byName" />
@@ -48,5 +50,28 @@
       p:defaultUri="http://localhost:8098/riak/{bucket}/{key}"
       p:mapReduceUri="http://localhost:8098/mapred" p:useCache="true" />
 
+
+   <!--  CometD -->
+   <bean id="bayeux" class="org.cometd.server.BayeuxServerImpl"
+      init-method="start" destroy-method="stop">
+   </bean>
+
+   <bean id="badgeService" class="com.buildbrighton.badge.web.BadgeCometService"
+      autowire="byType">
+      <constructor-arg>
+         <ref local="bayeux" />
+      </constructor-arg>
+   </bean>
+
+   <bean
+      class="org.springframework.web.context.support.ServletContextAttributeExporter">
+      <property name="attributes">
+         <map>
+            <entry key="org.cometd.bayeux">
+               <ref local="bayeux" />
+            </entry>
+         </map>
+      </property>
+   </bean>
 
 </beans>

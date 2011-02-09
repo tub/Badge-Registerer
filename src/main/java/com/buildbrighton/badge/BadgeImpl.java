@@ -9,7 +9,7 @@ import java.util.Set;
 import com.buildbrighton.badge.db.UserDao;
 import com.buildbrighton.badge.serial.BadgeSerialListener;
 
-public class BadgeListenerImpl implements BadgeListener, Badge {
+public class BadgeImpl implements BadgeDataListener, Badge {
 
 	private byte currentBadgeId;
 	private byte currentBadgeValue;
@@ -23,6 +23,7 @@ public class BadgeListenerImpl implements BadgeListener, Badge {
 
 	private UserDao userDao;
 	private BadgeSerialListener serial;
+	private BadgeEventListener badgeEventListener;
 
 	public synchronized void dataAvailable(byte[] data) {
 		if (data.length < 4) {
@@ -40,10 +41,14 @@ public class BadgeListenerImpl implements BadgeListener, Badge {
 				
 		if (id != SENDING_DATA) {
 			if (id != currentBadgeId) {
-				// new badge ID. reset values and
+				// new badge ID. reset values
 				currentBadgeId = data[1];
-				synchronized (BadgeListenerImpl.colourValues) {
-					BadgeListenerImpl.colourValues.clear();
+				synchronized (BadgeImpl.colourValues) {
+					BadgeImpl.colourValues.clear();
+				}
+				//Send 'new id' event
+				if(badgeEventListener != null){
+					badgeEventListener.badgeIdChanged(this);
 				}
 			}
 			
@@ -54,14 +59,14 @@ public class BadgeListenerImpl implements BadgeListener, Badge {
 				sendNewId(getRandomBadgeId());
 			}
 		} else {
-			synchronized (BadgeListenerImpl.colourValues) {
-				BadgeListenerImpl.colourValues.put(data[2], data[3]);
+			synchronized (BadgeImpl.colourValues) {
+				BadgeImpl.colourValues.put(data[2], data[3]);
 			}
 		}
 
 		if (isHeader(data)) {
-			synchronized (BadgeListenerImpl.colourValues) {
-				BadgeListenerImpl.colourValues.clear();
+			synchronized (BadgeImpl.colourValues) {
+				BadgeImpl.colourValues.clear();
 			}
 		}
 
@@ -108,8 +113,8 @@ public class BadgeListenerImpl implements BadgeListener, Badge {
 	}
 
 	public Map<Byte, Byte> getColours() {
-		synchronized (BadgeListenerImpl.colourValues) {
-			return new HashMap<Byte, Byte>(BadgeListenerImpl.colourValues);
+		synchronized (BadgeImpl.colourValues) {
+			return new HashMap<Byte, Byte>(BadgeImpl.colourValues);
 		}
 	}
 
@@ -120,5 +125,9 @@ public class BadgeListenerImpl implements BadgeListener, Badge {
 	public void setSerial(BadgeSerialListener serial) {
 		this.serial = serial;
 	}
+
+	public void setBadgeEventListener(BadgeEventListener l) {
+	    this.badgeEventListener = l;
+    }
 
 }

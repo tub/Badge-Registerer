@@ -1,7 +1,8 @@
 package com.buildbrighton.badge;
 
-public interface BadgeListener {
+public interface BadgeDataListener {
 	public void dataAvailable(byte[] data);
+	public void setBadgeEventListener(BadgeEventListener l);
 
 	public enum Mode {
 		INIT((byte) 0x01), ZOMBIE((byte) 0x03), INFECTED((byte) 0x04), 

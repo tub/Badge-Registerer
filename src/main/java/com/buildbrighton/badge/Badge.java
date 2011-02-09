@@ -2,7 +2,7 @@ package com.buildbrighton.badge;
 
 import java.util.Map;
 
-import com.buildbrighton.badge.BadgeListener.Mode;
+import com.buildbrighton.badge.BadgeDataListener.Mode;
 
 public interface Badge {
 	public byte getId();

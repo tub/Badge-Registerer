@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
 
-import com.buildbrighton.badge.BadgeListener;
+import com.buildbrighton.badge.BadgeDataListener;
 
 public class BadgeSerialListener implements SerialPortEventListener {
 	SerialPort serialPort;
@@ -31,7 +31,7 @@ public class BadgeSerialListener implements SerialPortEventListener {
 	/** Default bits per second for COM port. */
 	private static final int DATA_RATE = 9600;
 
-	private BadgeListener badgeListener;
+	private BadgeDataListener badgeListener;
 
 	private boolean S;
 	private boolean T;
@@ -167,11 +167,11 @@ public class BadgeSerialListener implements SerialPortEventListener {
 		System.out.println("Started");
 	}
 
-	public void setBadgeListener(BadgeListener badgeListener) {
+	public void setBadgeListener(BadgeDataListener badgeListener) {
 		this.badgeListener = badgeListener;
 	}
 
-	public BadgeListener getBadgeListener() {
+	public BadgeDataListener getBadgeListener() {
 		return badgeListener;
 	}
 }
