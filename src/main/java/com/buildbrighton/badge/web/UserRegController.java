@@ -25,10 +25,18 @@ public class UserRegController extends BaseController {
 	private UserDao userDao;
 
 	@RequestMapping("/register.html")
-	public ModelAndView test(ModelAndView mav) {
+	public ModelAndView test(ModelAndView mav, @RequestParam(required=false) Integer userId) {
 		mav.setViewName("register");
 		mav.addObject("badge", badge);
-		mav.addObject("user", new User());
+		User user = new User();
+		if(userId != null){
+			User userById = userDao.getUserById(userId);
+			if(userById != null){
+				user = userById;
+			}
+		}
+		
+		mav.addObject("user", user);
 		mav.addObject("contextPath", contextPath);
 		return mav;
 	}
@@ -53,10 +61,10 @@ public class UserRegController extends BaseController {
 		user.setName(name);
 		user.setId(id);
 		user.setEmailAddress(emailAddress);
-		
+
 		userDao.saveUser(user);
 
-		return new ModelAndView(String.format("redirect:/users/%s.html",id));
+		return new ModelAndView(String.format("redirect:/users/%s.html", id));
 	}
 
 	@RequestMapping(value = "/users/{user}.html", method = RequestMethod.GET)
@@ -66,7 +74,7 @@ public class UserRegController extends BaseController {
 		mav.setViewName("showUser");
 		return mav;
 	}
-	
+
 	@RequestMapping(value = "/currentBadge.json", method = RequestMethod.GET)
 	public ModelAndView currentBadge(ModelAndView mav, HttpServletResponse rsp) {
 		rsp.setContentType("application/json");
@@ -82,13 +90,36 @@ public class UserRegController extends BaseController {
 		Set<Integer> userIds = userDao.getUserIds();
 		mav.addObject("userIds", userIds);
 		Set<User> users = new HashSet<User>();
-		for(Integer uid:userIds){
-			users.add(userDao.getUserById(uid));
+		for (Integer uid : userIds) {
+			User userById = userDao.getUserById(uid);
+			if (userById != null) {
+				users.add(userById);
+			}
 		}
-		mav.addObject("users",users);
+		mav.addObject("users", users);
 		mav.addObject("contextPath", contextPath);
 		mav.setViewName("showUsers");
 		return mav;
+	}
+
+	@RequestMapping(value = "/users.html", method = RequestMethod.POST)
+	public ModelAndView userPost(ModelAndView mav, @RequestParam int userId,
+	        @RequestParam String action) {
+		if ("delete".equals(action)) {
+			if (userDao.deleteUser(userId)) {
+				mav.addObject("message", String.format("User %s was deleted",
+				        userId));
+			} else {
+				mav
+				        .addObject(
+				                "message",
+				                String
+				                        .format(
+				                                "User %s wasn't deleted. Did it exist in the first place?",
+				                                userId));
+			}
+		}
+		return viewUsers(mav);
 	}
 
 }

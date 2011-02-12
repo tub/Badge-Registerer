@@ -41,6 +41,7 @@ public class RiakUserDao implements UserDao {
 	public boolean deleteUser(int id){
 		Set<Integer> userIds = getUserIds();
 		if(userIds.remove(id)){
+			saveUserIds(userIds);
 			riakTemplate.delete("users", id);
 			return true;
 		}

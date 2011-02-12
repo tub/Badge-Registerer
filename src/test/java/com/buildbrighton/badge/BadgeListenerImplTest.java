@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.buildbrighton.badge.BadgeDataListener.Mode;
+import com.buildbrighton.badge.Badge.Mode;
 
 public class BadgeListenerImplTest {
 
@@ -21,10 +21,10 @@ public class BadgeListenerImplTest {
 		b.dataAvailable(new byte[]{(byte)0xbb, (byte)0x00, (byte)0x04, (byte)0x42});
 		b.dataAvailable(new byte[]{(byte)0xbb, (byte)0x13, Mode.SENDING_EEPROM.mode(), (byte)0xff});
 		
-		assertEquals((byte)0x13, b.getId());
+		assertEquals(19, b.getId());// 0x13 = 19 decimal
 		assertEquals(Mode.SENDING_EEPROM, b.getMode());
 		
-		Map<Byte, Byte> v = b.getColours();
+		Map<Integer, Integer> v = b.getColours();
 		assertEquals(v.size(), 4);
 		
 		//Send header packet
@@ -33,10 +33,11 @@ public class BadgeListenerImplTest {
 		b.dataAvailable(new byte[]{(byte)0xbb, (byte)0x00, (byte)0x02, (byte)0x43});
 		b.dataAvailable(new byte[]{(byte)0xbb, (byte)0x34, Mode.SENDING_EEPROM.mode(), (byte)0xff});
 		
-		assertEquals((byte)0x34, b.getId());
+		assertEquals(52, b.getId()); //0x34 = 52 decimal
 		assertEquals(Mode.SENDING_EEPROM, b.getMode());
 		
-		Map<Byte, Byte> v2 = b.getColours();
+		Map<Integer, Integer> v2 = b.getColours();
+		
 		//Make sure we're not returning references
 		assertEquals(v.size(), 4);
 		

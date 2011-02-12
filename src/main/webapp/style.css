@@ -216,7 +216,7 @@ body {
 
 #wrapper {
   width: 80%;
-  max-width: 1200px;
+  max-width: 1000px;
   min-width: 60em;
   margin: 0 auto;
   text-align: left;
@@ -383,7 +383,7 @@ a:hover {
 
 #header {
   clear: both;
-  max-width:1200px;
+  max-width:1000px;
   min-width:60em;
   /*background: #5e514a url('images/header-background.jpg') no-repeat scroll right center;*/
   background: transparent url(images/arduino-nano.png) no-repeat scroll 80% top;
@@ -1429,4 +1429,14 @@ code {
     height: 130px;
     text-align: center;
       font-family:'ocra10Regular','OCR A Std', monospace;
+}
+
+
+div.message{
+    border: 1px solid #000;
+    background-color: #990000;
+    color: #eee;
+    padding: 0.5em;
+    margin: 0.5em 0;
+    -moz-border-radius: 6px;
 }
