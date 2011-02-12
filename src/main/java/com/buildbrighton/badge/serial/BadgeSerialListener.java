@@ -115,10 +115,9 @@ public class BadgeSerialListener implements SerialPortEventListener {
 				input.read(chunk, 0, available);
 
 				for (byte b : chunk) {
-					//Unsigned to signed
-					b = (byte) (b & 0xFF);
-					
+
 					System.out.print(b + " ");
+					
 					if(b == 's'){
 						S = true;
 					}

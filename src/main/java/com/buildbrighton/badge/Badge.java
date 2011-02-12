@@ -5,11 +5,11 @@ import java.util.Map;
 import com.buildbrighton.badge.BadgeDataListener.Mode;
 
 public interface Badge {
-	public byte getId();
+	public int getId();
 
 	public Mode getMode();
 	
-	public byte getValue();
+	public int getValue();
 
-	public Map<Byte, Byte> getColours();
+	public Map<Integer, Integer> getColours();
 }

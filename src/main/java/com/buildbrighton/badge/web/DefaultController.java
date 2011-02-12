@@ -8,17 +8,18 @@ import org.springframework.web.servlet.ModelAndView;
 import com.buildbrighton.badge.Badge;
 
 @Controller
-public class DefaultController{
+public class DefaultController extends BaseController{
 	private Badge badge;
 	
 	public DefaultController(){
 		System.out.println("Starting.");
 	}
 
-	@RequestMapping("/index.html")
+	@RequestMapping({"/index.html", "home"})
 	public ModelAndView test(ModelAndView mav){
 		mav.setViewName("test");
 		mav.addObject("badge", badge);
+		mav.addObject("contextPath", contextPath);
 		return mav;
 	}
 

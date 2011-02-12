@@ -1,5 +1,5 @@
 {"id" : "${badge.id}",
-<#if user??>
+<#if user?? && user.name??>
 "userKnown" : true,
 "userName" : "${user.name}",
 "userEmail" : "${user.emailAddress}"

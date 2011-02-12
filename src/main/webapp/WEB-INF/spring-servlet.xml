@@ -25,13 +25,12 @@
       <property name="cache" value="false" />
       <property name="prefix" value="" />
       <property name="suffix" value=".ftl" />
+      <property name="exposeSpringMacroHelpers" value="true"/>
    </bean>
 
    <bean id="badgeListener" class="com.buildbrighton.badge.BadgeImpl"
-      autowire="byType">
-      <property name="badgeEventListener" ref="badgeService" />
-      </bean>
-
+      autowire="byType"/>
+      
    <bean id="badgeSerial" class="com.buildbrighton.badge.serial.BadgeSerialListener"
       autowire="byName" />
 
@@ -49,9 +48,11 @@
       class="org.springframework.data.keyvalue.riak.core.RiakTemplate"
       p:defaultUri="http://localhost:8098/riak/{bucket}/{key}"
       p:mapReduceUri="http://localhost:8098/mapred" p:useCache="true" />
+      
+      <!--
 
 
-   <!--  CometD -->
+     CometD 
    <bean id="bayeux" class="org.cometd.server.BayeuxServerImpl"
       init-method="start" destroy-method="stop">
    </bean>
@@ -74,4 +75,4 @@
       </property>
    </bean>
 
-</beans>
+--></beans>

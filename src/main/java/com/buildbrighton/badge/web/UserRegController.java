@@ -1,5 +1,8 @@
 package com.buildbrighton.badge.web;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +19,7 @@ import com.buildbrighton.badge.db.User;
 import com.buildbrighton.badge.db.UserDao;
 
 @Controller
-public class UserRegController {
+public class UserRegController extends BaseController {
 	private Badge badge;
 
 	private UserDao userDao;
@@ -26,6 +29,7 @@ public class UserRegController {
 		mav.setViewName("register");
 		mav.addObject("badge", badge);
 		mav.addObject("user", new User());
+		mav.addObject("contextPath", contextPath);
 		return mav;
 	}
 
@@ -58,6 +62,7 @@ public class UserRegController {
 	@RequestMapping(value = "/users/{user}.html", method = RequestMethod.GET)
 	public ModelAndView viewUser(ModelAndView mav, @PathVariable Integer user) {
 		mav.addObject("user", userDao.getUserById(user));
+		mav.addObject("contextPath", contextPath);
 		mav.setViewName("showUser");
 		return mav;
 	}
@@ -67,13 +72,21 @@ public class UserRegController {
 		rsp.setContentType("application/json");
 		mav.addObject("user", userDao.getUserById(badge.getId()));
 		mav.addObject("badge", badge);
+		mav.addObject("contextPath", contextPath);
 		mav.setViewName("currentBadgeJson");
 		return mav;
 	}
 
 	@RequestMapping(value = "/users.html", method = RequestMethod.GET)
 	public ModelAndView viewUsers(ModelAndView mav) {
-		mav.addObject("users", userDao.getUserIds());
+		Set<Integer> userIds = userDao.getUserIds();
+		mav.addObject("userIds", userIds);
+		Set<User> users = new HashSet<User>();
+		for(Integer uid:userIds){
+			users.add(userDao.getUserById(uid));
+		}
+		mav.addObject("users",users);
+		mav.addObject("contextPath", contextPath);
 		mav.setViewName("showUsers");
 		return mav;
 	}

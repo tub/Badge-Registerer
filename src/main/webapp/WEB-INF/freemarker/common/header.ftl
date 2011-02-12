@@ -10,8 +10,11 @@ BuildBrighton Badge Workshop
 </#if>
 </title>
 <script src="http://code.jquery.com/jquery-1.5.js"></script>
-<script src="js/jquery.comet.js" />
-<script src="js/workshop.js"></script>
+
+    <script type="text/javascript" src="js/jquery.json-2.2.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script>
+
+    <script src="js/workshop.js"></script>
 </head>
 <body <#if bodyId??>id="${bodyId}"</#if>>
 <div id="wrapper">

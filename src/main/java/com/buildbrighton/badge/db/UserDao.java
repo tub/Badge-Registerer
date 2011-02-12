@@ -8,4 +8,6 @@ public interface UserDao {
 	public User getUserById(int id);
 	
 	public Set<Integer> getUserIds();
+	
+	public boolean deleteUser(int id);
 }
