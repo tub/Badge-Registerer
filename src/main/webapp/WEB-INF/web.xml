@@ -4,28 +4,28 @@
 
 <web-app>
    <display-name>Archetype Created Web Application</display-name>
-   <!--
 
-      <listener>
-      <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-      </listener>
-   -->
+   <context-param>
+      <param-name>log4jConfigLocation</param-name>
+      <param-value>/WEB-INF/log4j.properties</param-value>
+   </context-param>
+
+   <listener>
+      <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+   </listener>
+
    <servlet>
       <servlet-name>spring</servlet-name>
       <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
       <load-on-startup>1</load-on-startup>
    </servlet>
+   <!--
 
-   <servlet>
-      <servlet-name>cometd</servlet-name>
+      <servlet> <servlet-name>cometd</servlet-name>
       <servlet-class>org.cometd.server.CometdServlet</servlet-class>
-   </servlet>
-
-   <servlet-mapping>
-      <servlet-name>cometd</servlet-name>
-      <url-pattern>/cometd/*</url-pattern>
-   </servlet-mapping>
-
+      </servlet> <servlet-mapping> <servlet-name>cometd</servlet-name>
+      <url-pattern>/cometd/*</url-pattern> </servlet-mapping>
+   -->
    <servlet-mapping>
       <servlet-name>spring</servlet-name>
       <url-pattern>*.html</url-pattern>
