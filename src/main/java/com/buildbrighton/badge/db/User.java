@@ -8,6 +8,8 @@ public class User {
 	private int id;
 	private String name;
 	private String emailAddress;
+	private String twitterId;
+	private boolean announcements;
 	private Map<Integer, Integer> colours;
 
 	public User() {
@@ -18,6 +20,7 @@ public class User {
 	}
 
 	public void setId(int id) {
+		checkIdValid(id);
 		this.id = id;
 	}
 
@@ -37,6 +40,22 @@ public class User {
 		this.emailAddress = emailAddress;
 	}
 
+	public String getTwitterId() {
+    	return twitterId;
+    }
+
+	public void setTwitterId(String twitterId) {
+    	this.twitterId = twitterId;
+    }
+
+	public boolean isAnnouncements() {
+    	return announcements;
+    }
+
+	public void setAnnouncements(boolean announcements) {
+    	this.announcements = announcements;
+    }
+
 	public Map<Integer, Integer> getColours() {
 		return colours;
 	}
@@ -46,12 +65,15 @@ public class User {
 	}
 	
 	public  int getHue() {
+		return (id * 360) / Badge.MAX_ID;
+	}
+	
+	private void checkIdValid(int id){
 		if (id > 240) {
 			throw new IllegalArgumentException("ID is greater than 240");
 		}
 		if (id < 1) {
 			throw new IllegalArgumentException("ID is less than 1");
 		}
-		return (id * 360) / Badge.MAX_ID;
 	}
 }

@@ -34,6 +34,8 @@ public class UserRegController extends BaseController {
 			if(userById != null){
 				user = userById;
 			}
+		}else{
+			user.setId(badge.getId());
 		}
 		
 		mav.addObject("user", user);
@@ -55,12 +57,17 @@ public class UserRegController extends BaseController {
 
 	@RequestMapping(value = "/saveUser.html", method = RequestMethod.POST)
 	public ModelAndView saveUser(@RequestParam int id,
-	        @RequestParam String name, @RequestParam String emailAddress) {
+	        @RequestParam String name, 
+	        @RequestParam(required=false) String emailAddress,
+	        @RequestParam(required=false) String twitterId,
+	        @RequestParam(required=false) Boolean announcements) {
 
 		User user = new User();
 		user.setName(name);
 		user.setId(id);
 		user.setEmailAddress(emailAddress);
+		user.setTwitterId(twitterId);
+		user.setAnnouncements(announcements);
 
 		userDao.saveUser(user);
 

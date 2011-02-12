@@ -1440,3 +1440,22 @@ div.message{
     margin: 0.5em 0;
     -moz-border-radius: 6px;
 }
+
+.listed li{
+    list-style: none;
+    position: relative;
+    text-align: right;
+    width: 10em;
+    margin: 0.2em 0;
+}
+
+.listed input[type=text]{
+    position: absolute;
+    left: 11em;
+}
+
+.listed .checkbox, .listed .submit{
+    width: auto;
+    margin-left: 11em;
+    text-align: left;
+}

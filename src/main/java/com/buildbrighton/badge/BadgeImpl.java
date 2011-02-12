@@ -38,12 +38,12 @@ public class BadgeImpl implements BadgeDataListener, Badge {
 			        "Got %s instead of 0xbb for device ID", data[0]));
 			return;
 		}
-		byte id = data[1];
+		int id = unsignedByteToInt(data[1]);
 				
-		if (id != SENDING_DATA) {
+		if (data[1] != SENDING_DATA) {
 			if (id != currentBadgeId) {
 				// new badge ID. reset values
-				currentBadgeId = unsignedByteToInt(data[1]);
+				currentBadgeId = id;
 				synchronized (BadgeImpl.colourValues) {
 					BadgeImpl.colourValues.clear();
 				}
