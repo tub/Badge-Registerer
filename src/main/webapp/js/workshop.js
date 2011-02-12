@@ -3,15 +3,9 @@ var currentBadge = 0;
 $(document).ready(function(){
 	if($("body#home").size() > 0){
 		$("#content").append("<div id='ajax'>Looking for badges</div>");
-		//setInterval( "doBadgeAjax()", 1000 );
 		
-		$.comet.init() to setup the connection and get clientId.
-
-		$.comet.publish to send messages,
-
-		$.comet.subscribe to setup a subscription.
-
-		$(’selector’).bind(’subscription’, function(event, data) {});
+		setInterval( "doBadgeAjax()", 1000 );
+		
 	}
 });
 
