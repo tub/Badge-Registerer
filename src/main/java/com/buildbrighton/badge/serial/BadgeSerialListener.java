@@ -8,11 +8,18 @@ import gnu.io.SerialPortEventListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.util.Enumeration;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.buildbrighton.badge.BadgeDataListener;
 
 public class BadgeSerialListener implements SerialPortEventListener {
+	
+	Logger log = LoggerFactory.getLogger(this.getClass());
+	
 	SerialPort serialPort;
 	/** The port we're normally going to use. */
 	private static final String PORT_NAMES[] = { "/dev/tty.usbserial-A600bNdu", // Mac
@@ -33,15 +40,22 @@ public class BadgeSerialListener implements SerialPortEventListener {
 
 	private BadgeDataListener badgeListener;
 
-	private boolean S;
-	private boolean T;
-	private boolean A;
-	private boolean R;
-	private byte[] buffer = new byte[4];
-	private int bufferHead;
+	private int frameIndex;
+	private ByteBuffer messageBuffer;
+	private ByteBuffer invertedBuffer;
 
 	public BadgeSerialListener() {
 		initialize();
+	}
+	
+	/** 
+	 * Constructor for unit testing, allows skipping serial init
+	 * @param init whether to init or not.
+	 */
+	public BadgeSerialListener(boolean init){
+		if(init){
+			initialize();
+		}
 	}
 
 	public void initialize() {
@@ -63,7 +77,7 @@ public class BadgeSerialListener implements SerialPortEventListener {
 		}
 
 		if (portId == null) {
-			System.out.println("Could not find COM port.");
+			log.error("Could not find COM port.");
 			return;
 		}
 
@@ -84,7 +98,8 @@ public class BadgeSerialListener implements SerialPortEventListener {
 			serialPort.addEventListener(this);
 			serialPort.notifyOnDataAvailable(true);
 		} catch (Exception e) {
-			System.err.println(e.toString());
+			log.error("Exception while initializing", e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -113,43 +128,56 @@ public class BadgeSerialListener implements SerialPortEventListener {
 				int available = input.available();
 				byte chunk[] = new byte[available];
 				input.read(chunk, 0, available);
-
+				
 				for (byte b : chunk) {
-
-					System.out.print(b + " ");
+					log.debug("got byte: " +Byte.toString(b));
 					
-					if(b == 's'){
-						S = true;
-					}
-					if(S && b == 't'){
-						S = false;
-						T = true;
-					}
-					if(T && b == 'a'){
-						T = false;
-						A = true;
-					}
-					if(A && b == 'r'){
-						A = false;
-						R = true;
-					}
-					if(R && b == 't'){
-						R = false;
-						buffer = new byte[4];
-						bufferHead = 0;
-						System.out.println();
+					if(frameIndex < 4){
+						if(b == (byte)0x0){
+							frameIndex++;
+						}else{
+							frameIndex = 0;
+						}
 						continue;
 					}
-					if(bufferHead < 4){
-						buffer[bufferHead] = b;
+					
+					if(frameIndex == 4){
+						messageBuffer = ByteBuffer.allocate(4);
+						invertedBuffer = ByteBuffer.allocate(4);
 					}
 					
-					bufferHead++;
-					
-					if(bufferHead == 4){
-						System.out.println();
-						badgeListener.dataAvailable(buffer);
+					if(frameIndex > 3 && frameIndex < 8){
+						messageBuffer.put(b);
 					}
+					
+					if(frameIndex > 7){
+						invertedBuffer.put(b);
+					}
+					
+					if(frameIndex == 11){
+						messageBuffer.rewind();
+						int msg = messageBuffer.getInt();
+						
+						log.info("Message: " + Integer.toHexString(msg));
+						
+						invertedBuffer.rewind();
+						int inv = invertedBuffer.getInt();
+						
+						log.info("Inverted: " + Integer.toHexString(inv));
+						
+						if(msg == Integer.reverse(inv)){
+							messageBuffer.rewind();
+							badgeListener.dataAvailable(messageBuffer.array());
+							log.debug("Got message hex: " + Integer.toHexString(msg));
+						}else{
+							log.info("Message had bad checksum: "+ msg + " checksum: " + inv);
+						}
+						frameIndex = 0;
+						continue;
+					}
+					
+					frameIndex++;
+					
 				}
 
 			} catch (Exception e) {
