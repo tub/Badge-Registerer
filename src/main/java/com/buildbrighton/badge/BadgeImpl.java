@@ -1,16 +1,21 @@
 package com.buildbrighton.badge;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.buildbrighton.badge.db.User;
 import com.buildbrighton.badge.db.UserDao;
 import com.buildbrighton.badge.serial.BadgeSerialListener;
 
 public class BadgeImpl implements BadgeDataListener, Badge {
+	Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private int currentBadgeId;
 	private int currentBadgeValue;
@@ -43,13 +48,15 @@ public class BadgeImpl implements BadgeDataListener, Badge {
 		if (data[1] != SENDING_DATA) {
 			if (id != currentBadgeId) {
 				// new badge ID. reset values
-				currentBadgeId = id;
-				synchronized (BadgeImpl.colourValues) {
-					BadgeImpl.colourValues.clear();
-				}
-				//Send 'new id' event
-				if(badgeEventListener != null){
-					badgeEventListener.badgeIdChanged(this);
+				if(id > 0 && id <= 240){
+					currentBadgeId = id;
+					synchronized (BadgeImpl.colourValues) {
+						BadgeImpl.colourValues.clear();
+					}
+					//Send 'new id' event
+					if(badgeEventListener != null){
+						badgeEventListener.badgeIdChanged(this);
+					}
 				}
 			}
 			
@@ -88,7 +95,22 @@ public class BadgeImpl implements BadgeDataListener, Badge {
 
 	private void sendNewId(int randomBadgeId) {
 		try {
-			serial.write(new byte[] { (byte) randomBadgeId });
+			byte[] data = new byte[] { (byte) 0xBB, (byte) 250, Mode.PROGRAM_BADGE_ID.mode(), (byte) randomBadgeId };
+			
+			byte[] inv = new byte[data.length];
+			for(int i = 0; i < data.length; i++){
+				int di = data[i] & 0xFF;
+				di = ~di;
+				inv[i] = (byte)di;
+			}
+			
+			serial.write(new byte[]{0x00, 0x00, 0x00, 0x00});
+			serial.write(data);
+			serial.write(inv);
+			
+			log.debug(Integer.toHexString(ByteBuffer.wrap(data).getInt()));
+			log.debug(Integer.toHexString(ByteBuffer.wrap(inv).getInt()));
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -96,15 +118,15 @@ public class BadgeImpl implements BadgeDataListener, Badge {
 
 	private int getRandomBadgeId() {
 		Set<Integer> ids = userDao.getUserIds();
-		if (ids.size() == 249) {
+		if (ids.size() == 239) {
 			// Don't get into an infinite loop.
 			throw new RuntimeException("Run out of badge IDs!");
 		}
 		Random random = new Random();
-		// between 1 and 250
+		// between 1 and 240
 		int rInt = 0;
 		do {
-			rInt = random.nextInt(249) + 1;
+			rInt = random.nextInt(239) + 1;
 		} while (ids.contains(rInt));
 
 		return rInt;

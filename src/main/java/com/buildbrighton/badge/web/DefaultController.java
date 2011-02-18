@@ -15,7 +15,7 @@ public class DefaultController extends BaseController{
 		System.out.println("Starting.");
 	}
 
-	@RequestMapping({"/index.html", "home"})
+	@RequestMapping({"/index.html", "/"})
 	public ModelAndView test(ModelAndView mav){
 		mav.setViewName("test");
 		mav.addObject("badge", badge);

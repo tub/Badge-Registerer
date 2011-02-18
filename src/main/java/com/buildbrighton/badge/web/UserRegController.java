@@ -69,7 +69,7 @@ public class UserRegController extends BaseController {
 		user.setId(id);
 		user.setEmailAddress(emailAddress);
 		user.setTwitterId(twitterId);
-		user.setAnnouncements(announcements);
+		user.setAnnouncements(announcements == null ? false : announcements);
 
 		userDao.saveUser(user);
 

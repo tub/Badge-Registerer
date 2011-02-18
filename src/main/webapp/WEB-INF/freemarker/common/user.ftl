@@ -1,10 +1,11 @@
 <ul>
     <li>Badge ID: <a href="${contextPath}/users/${user.id}.html">${user.id}</a></li>
-    <li style="background-color: hsl(${user.hue}, 100%, 50%)"></li>
-    <li>Registered to: ${user.name!"Unknown"} 
-        <#if user.emailAddress??>email: ${user.emailAddress}</#if>
-        <#if user.twitterId??>twitter: ${user.twitterId}</#if>
-        <#if user.announcements??>add to announcments?: ${user.announcements}</#if>
+    <li style="background-color: hsl(${user.hue()}, 100%, 50%)"></li>
+    <li>Registered to: <ul><li>${user.name!"Unknown"} </li>
+        <#if user.emailAddress??><li>email: ${user.emailAddress}</li></#if>
+        <#if user.twitterId??><li>twitter: ${user.twitterId}</li></#if>
+        <#if user.announcements??><li>add to announcments?: ${user.announcements?string}</li></#if>
+        </ul>
         </li>
     <li>
         <form action="${contextPath}/users.html" method="post">

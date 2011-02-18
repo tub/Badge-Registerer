@@ -2,6 +2,8 @@ package com.buildbrighton.badge.db;
 
 import java.util.Map;
 
+import org.junit.Ignore;
+
 import com.buildbrighton.badge.Badge;
 
 public class User {
@@ -63,8 +65,8 @@ public class User {
 	public void setColours(Map<Integer, Integer> colours) {
 		this.colours = colours;
 	}
-	
-	public  int getHue() {
+
+	public int hue() {
 		return (id * 360) / Badge.MAX_ID;
 	}
 	

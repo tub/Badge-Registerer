@@ -22,9 +22,8 @@ public class BadgeSerialListener implements SerialPortEventListener {
 	
 	SerialPort serialPort;
 	/** The port we're normally going to use. */
-	private static final String PORT_NAMES[] = { "/dev/tty.usbserial-A600bNdu", // Mac
-	        // OS
-	        // X
+	private static final String PORT_NAMES[] = {"/dev/tty.usbserial-A600bNdu", // Mac OSX arduino mega
+			"/dev/tty.usbserial-A7006TfC",
 	        "/dev/ttyUSB0", // Linux
 	        "COM3", // Windows
 	};
@@ -165,7 +164,7 @@ public class BadgeSerialListener implements SerialPortEventListener {
 						
 						log.info("Inverted: " + Integer.toHexString(inv));
 						
-						if(msg == Integer.reverse(inv)){
+						if(msg + inv == 0xffffffff){
 							messageBuffer.rewind();
 							badgeListener.dataAvailable(messageBuffer.array());
 							log.debug("Got message hex: " + Integer.toHexString(msg));
@@ -181,6 +180,8 @@ public class BadgeSerialListener implements SerialPortEventListener {
 				}
 
 			} catch (Exception e) {
+				// reset state
+				frameIndex = 0;
 				e.printStackTrace(System.err);
 			}
 		}

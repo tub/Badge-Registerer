@@ -1,4 +1,4 @@
-<!DOCTYPE web-app PUBLIC
+    <!DOCTYPE web-app PUBLIC
  "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
@@ -33,7 +33,7 @@
 
    <servlet-mapping>
       <servlet-name>spring</servlet-name>
-      <url-pattern>/home</url-pattern>
+      <url-pattern>/index.html</url-pattern>
    </servlet-mapping>
 
    <servlet-mapping>
@@ -42,7 +42,7 @@
    </servlet-mapping>
 
    <welcome-file-list>
-      <welcome-file>home</welcome-file>
+      <welcome-file>index.html</welcome-file>
    </welcome-file-list>
 
 </web-app>
