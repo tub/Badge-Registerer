@@ -1,7 +1,9 @@
 package com.buildbrighton.badge.db;
 
+import java.util.HashMap;
 import java.util.Map;
 
+import org.codehaus.jackson.map.ser.MapSerializer;
 import org.junit.Ignore;
 
 import com.buildbrighton.badge.Badge;
@@ -12,7 +14,7 @@ public class User {
 	private String emailAddress;
 	private String twitterId;
 	private boolean announcements;
-	private Map<Integer, Integer> colours;
+	private Map<Integer, Integer> colours = new HashMap<Integer, Integer>();
 
 	public User() {
 	}
@@ -67,6 +69,10 @@ public class User {
 	}
 
 	public int hue() {
+		return (id * 360) / Badge.MAX_ID;
+	}
+	
+	public int hue(int id) {
 		return (id * 360) / Badge.MAX_ID;
 	}
 	

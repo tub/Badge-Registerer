@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.buildbrighton.badge.BadgeDataListener;
+import com.buildbrighton.badge.Badge.Mode;
 
 public class BadgeSerialListener implements SerialPortEventListener {
 	
@@ -115,6 +116,30 @@ public class BadgeSerialListener implements SerialPortEventListener {
 
 	public synchronized void write(byte[] data) throws IOException {
 		output.write(data);
+	}
+	
+	public synchronized void sendPacket(Mode mode, byte data) {
+		try {
+			byte[] dataPacket = new byte[] { (byte) 0xBB, (byte) 250, mode.mode(), data };
+			
+			byte[] inv = new byte[dataPacket.length];
+			for(int i = 0; i < dataPacket.length; i++){
+				int di = dataPacket[i] & 0xFF;
+				di = ~di;
+				inv[i] = (byte)di;
+			}
+			
+			write(new byte[]{0x00, 0x00, 0x00, 0x00});
+			write(dataPacket);
+			write(inv);
+			
+			log.debug("Writing data to serial:");
+			log.debug(Integer.toHexString(ByteBuffer.wrap(dataPacket).getInt()));
+			log.debug(Integer.toHexString(ByteBuffer.wrap(inv).getInt()));
+			
+		} catch (IOException e) {
+			log.error("Error sending data to serial port", e);
+		}
 	}
 
 	/**

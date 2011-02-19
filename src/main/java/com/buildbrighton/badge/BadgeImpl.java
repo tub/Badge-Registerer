@@ -1,7 +1,6 @@
 package com.buildbrighton.badge;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -31,6 +30,10 @@ public class BadgeImpl implements BadgeDataListener, Badge {
 	private BadgeSerialListener serial;
 	private BadgeEventListener badgeEventListener;
 
+	private long timestamp;
+
+	private boolean coloursReceived;
+
 	public synchronized void dataAvailable(byte[] data) {
 		if (data.length < 4) {
 			System.err.println(String.format("Got %s bytes from serial",
@@ -44,12 +47,15 @@ public class BadgeImpl implements BadgeDataListener, Badge {
 			return;
 		}
 		int id = unsignedByteToInt(data[1]);
-				
+
+		timestamp = new Date().getTime();
+		
 		if (data[1] != SENDING_DATA) {
 			if (id != currentBadgeId) {
 				// new badge ID. reset values
 				if(id > 0 && id <= 240){
 					currentBadgeId = id;
+					coloursReceived = false;
 					synchronized (BadgeImpl.colourValues) {
 						BadgeImpl.colourValues.clear();
 					}
@@ -73,6 +79,8 @@ public class BadgeImpl implements BadgeDataListener, Badge {
 					userDao.saveUser(user);
 					sendNewId(randomBadgeId);
 				}
+			}else if(currentBadgeMode == Mode.CYCLE && !coloursReceived){
+				serial.sendPacket(Mode.SEND_ME_EEPROM, (byte) 0);
 			}
 		} else {
 			synchronized (BadgeImpl.colourValues) {
@@ -84,36 +92,33 @@ public class BadgeImpl implements BadgeDataListener, Badge {
 			synchronized (BadgeImpl.colourValues) {
 				BadgeImpl.colourValues.clear();
 			}
+		}else if(isFooter(data)){
+			coloursReceived = true;
+			log.info("Received all colours.");
+			User user = userDao.getUserById(currentBadgeId);
+			if(user != null){
+				user.setColours(colourValues);
+				userDao.saveUser(user);
+			}
 		}
 
 	}
 	
+	private boolean isHeader(byte[] data) {
+		return data[2] == (byte) 0x05 && data[3] == (byte) 0x00;
+	}
+	
+	private boolean isFooter(byte[] data) {
+		return data[2] == (byte) 0x05 && data[3] == (byte) 0xFF;
+    }
+
 	public static int unsignedByteToInt(byte b) {
 		return (int) b & 0xFF;
 	}
 
 
 	private void sendNewId(int randomBadgeId) {
-		try {
-			byte[] data = new byte[] { (byte) 0xBB, (byte) 250, Mode.PROGRAM_BADGE_ID.mode(), (byte) randomBadgeId };
-			
-			byte[] inv = new byte[data.length];
-			for(int i = 0; i < data.length; i++){
-				int di = data[i] & 0xFF;
-				di = ~di;
-				inv[i] = (byte)di;
-			}
-			
-			serial.write(new byte[]{0x00, 0x00, 0x00, 0x00});
-			serial.write(data);
-			serial.write(inv);
-			
-			log.debug(Integer.toHexString(ByteBuffer.wrap(data).getInt()));
-			log.debug(Integer.toHexString(ByteBuffer.wrap(inv).getInt()));
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+			serial.sendPacket(Mode.PROGRAM_BADGE_ID, (byte)randomBadgeId);
 	}
 
 	private int getRandomBadgeId() {
@@ -130,10 +135,6 @@ public class BadgeImpl implements BadgeDataListener, Badge {
 		} while (ids.contains(rInt));
 
 		return rInt;
-	}
-
-	private boolean isHeader(byte[] data) {
-		return data[2] == (byte) 0x05 && data[3] == (byte) 0x00;
 	}
 
 	public int getId() {
@@ -164,6 +165,15 @@ public class BadgeImpl implements BadgeDataListener, Badge {
 
 	public void setBadgeEventListener(BadgeEventListener l) {
 	    this.badgeEventListener = l;
+    }
+
+	@Override
+    public long getLatestEventTimestamp() {
+		return timestamp;
+    }
+
+	public boolean isColoursReceived() {
+	    return coloursReceived;
     }
 
 }

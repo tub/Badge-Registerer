@@ -37,4 +37,8 @@ public interface Badge {
 	public int getValue();
 
 	public Map<Integer, Integer> getColours();
+	
+	public long getLatestEventTimestamp();
+	
+	public boolean isColoursReceived();
 }

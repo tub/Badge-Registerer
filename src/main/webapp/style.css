@@ -1459,3 +1459,33 @@ div.message{
     margin-left: 11em;
     text-align: left;
 }
+
+ul.userInfo{
+    position: relative; 
+}
+.userInfo form{
+    display: inline;
+}
+
+li.colour{
+    position: absolute;
+    display: block;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 12em;
+    -moz-border-radius: 10px;
+}
+
+li.seenColour{
+    float: left;
+    margin: 1em;
+    padding: 1em;
+    -moz-border-radius: 10px;
+    font-size: 50%;
+    width: 12em;
+}
+
+#content ul{
+    list-style: none;
+}

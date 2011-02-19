@@ -13,6 +13,8 @@ BuildBrighton Badge Workshop
 
     <script type="text/javascript" src="${contextPath}/js/jquery.json-2.2.js"></script>
     <script type="text/javascript" src="${contextPath}/js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="${contextPath}/js/springy.js"></script>
+    <script type="text/javascript" src="${contextPath}/js/springyui.js"></script>
 
     <script src="${contextPath}/js/workshop.js"></script>
 </head>
@@ -27,6 +29,7 @@ BuildBrighton Badge Workshop
         <ul>
             <li><a title="Home" href="${contextPath}/">Home</a></li>
             <li><a title="Home" href="${contextPath}/users.html">Users</a></li>
+            <li><a title="Home" href="${contextPath}/graph.html">Badge Graph</a></li>
         </ul></div>
     </div><!-- #access -->
     

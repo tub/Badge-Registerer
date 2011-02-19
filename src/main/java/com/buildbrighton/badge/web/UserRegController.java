@@ -1,12 +1,12 @@
 package com.buildbrighton.badge.web;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
@@ -78,7 +78,17 @@ public class UserRegController extends BaseController {
 
 	@RequestMapping(value = "/users/{user}.html", method = RequestMethod.GET)
 	public ModelAndView viewUser(ModelAndView mav, @PathVariable Integer user) {
-		mav.addObject("user", userDao.getUserById(user));
+		User userObj = userDao.getUserById(user);
+		mav.addObject("user", userObj);
+
+		// Freemarker map
+		Map<Integer, Integer> colours = userObj.getColours();
+		Map<String, Integer> fmColours = new HashMap<String, Integer>();
+		for(Integer i : colours.keySet()){
+			fmColours.put(i.toString(), colours.get(i));
+		}
+		
+		mav.addObject("colours", fmColours);
 		mav.addObject("contextPath", contextPath);
 		mav.setViewName("showUser");
 		return mav;
@@ -90,6 +100,7 @@ public class UserRegController extends BaseController {
 		mav.addObject("user", userDao.getUserById(badge.getId()));
 		mav.addObject("badge", badge);
 		mav.addObject("contextPath", contextPath);
+		mav.addObject("timestamp", badge.getLatestEventTimestamp());
 		mav.setViewName("currentBadgeJson");
 		return mav;
 	}
@@ -108,6 +119,23 @@ public class UserRegController extends BaseController {
 		mav.addObject("users", users);
 		mav.addObject("contextPath", contextPath);
 		mav.setViewName("showUsers");
+		return mav;
+	}
+	
+	@RequestMapping(value = "/graph.html", method = RequestMethod.GET)
+	public ModelAndView viewGraph(ModelAndView mav) {
+		Set<Integer> userIds = userDao.getUserIds();
+		mav.addObject("userIds", userIds);
+		Map<String, User> users = new HashMap<String, User>();
+		for (Integer uid : userIds) {
+			User userById = userDao.getUserById(uid);
+			if (userById != null) {
+				users.put(uid.toString(), userById);
+			}
+		}
+		mav.addObject("users", users);
+		mav.addObject("contextPath", contextPath);
+		mav.setViewName("graph");
 		return mav;
 	}
 
